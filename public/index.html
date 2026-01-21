@@ -1,21 +1,929 @@
-<body>
-  <form id="idk">
-    <input
-      id="url"
-      type="text"
-      class="search-input search"
-      placeholder="Search"
-    />
-    <select id="proxysel">
-      <option value="uv">ultraviolet</option>
-      <option value="scramjet">scramjet</option>
-    </select>
-  </form>
-  <iframe id="iframe" width="100%" height="100%"></iframe>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proxy King</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
+    :root {
+      --bg-primary: #1a0033;
+      --bg-secondary: #2a0045;
+      --text-primary: #ffffff;
+      --text-secondary: #f0f0f0;
+      --accent-primary: #7c3aed;
+      --accent-secondary: #a78bfa;
+      --border: #7c3aed;
+    }
+
+    html.light-mode {
+      --bg-primary: #f8f8f8;
+      --bg-secondary: #ffffff;
+      --text-primary: #000000;
+      --text-secondary: #333333;
+      --accent-primary: #7c3aed;
+      --accent-secondary: #a78bfa;
+      --border: #7c3aed;
+    }
+
+    body {
+      font-family: 'Lilita One', cursive;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    #particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    header {
+      background: linear-gradient(135deg, #4a0080 0%, var(--accent-primary) 100%);
+      padding: 40px 20px;
+      text-align: center;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 32px rgba(124, 58, 237, 0.3);
+      animation: slideDown 0.8s ease-out;
+      transition: all 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    h1 {
+      font-size: 3em;
+      text-shadow: 0 0 20px rgba(124, 58, 237, 0.8);
+      letter-spacing: 2px;
+      animation: glow 3s ease-in-out infinite;
+      color: white;
+    }
+
+    @keyframes glow {
+      0%, 100% {
+        text-shadow: 0 0 20px rgba(124, 58, 237, 0.8), 0 0 40px rgba(124, 58, 237, 0.4);
+      }
+      50% {
+        text-shadow: 0 0 30px rgba(124, 58, 237, 1), 0 0 60px rgba(124, 58, 237, 0.6);
+      }
+    }
+
+    header p {
+      color: white;
+      font-size: 0.9em;
+      letter-spacing: 1px;
+      margin-top: 10px;
+    }
+
+    /* Tabs system */
+    .tabs-container {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      animation: fadeIn 0.5s ease-out;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+
+    .tab-wrapper {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .tab-btn {
+      padding: 10px 18px;
+      background: var(--bg-secondary);
+      border: 2px solid var(--accent-primary);
+      border-radius: 8px;
+      color: var(--text-primary);
+      cursor: pointer;
+      font-family: 'Lilita One', cursive;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 0.9em;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .tab-btn:hover:not(.active) {
+      border-color: var(--accent-secondary);
+      transform: translateY(-1px);
+    }
+
+    .tab-close-btn {
+      padding: 6px 10px;
+      background: transparent;
+      border: 1px solid var(--accent-primary);
+      border-radius: 4px;
+      color: var(--accent-primary);
+      cursor: pointer;
+      font-family: 'Lilita One', cursive;
+      transition: all 0.2s ease;
+      font-size: 0.8em;
+      line-height: 1;
+    }
+
+    .tab-close-btn:hover {
+      background: var(--accent-primary);
+      color: white;
+    }
+
+    /* Form */
+    #idk {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeIn 0.8s ease-out 0.2s both;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #url {
+      flex: 1;
+      min-width: 280px;
+      padding: 12px 18px;
+      font-size: 0.95em;
+      font-family: 'Lilita One', cursive;
+      background: var(--bg-secondary);
+      border: 2px solid var(--accent-primary);
+      border-radius: 8px;
+      color: var(--text-primary);
+      transition: all 0.3s ease;
+    }
+
+    #url::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    html.light-mode #url::placeholder {
+      color: rgba(0, 0, 0, 0.3);
+    }
+
+    #url:focus {
+      outline: none;
+      border-color: var(--accent-secondary);
+      box-shadow: 0 0 15px rgba(124, 58, 237, 0.4);
+    }
+
+    #proxysel, #searchEngine {
+      padding: 12px 16px;
+      font-size: 0.95em;
+      font-family: 'Lilita One', cursive;
+      background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 140px;
+      box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+    }
+
+    #proxysel:hover, #searchEngine:hover {
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.5);
+      transform: translateY(-2px);
+    }
+
+    #proxysel:focus, #searchEngine:focus {
+      outline: none;
+    }
+
+    #proxysel option, #searchEngine option {
+      background: var(--bg-primary);
+      color: white;
+      padding: 8px;
+    }
+
+    html.light-mode #proxysel option,
+    html.light-mode #searchEngine option {
+      background: #ffffff;
+      color: #000000;
+    }
+
+    #idk button {
+      padding: 12px 35px;
+      font-size: 0.95em;
+      font-family: 'Lilita One', cursive;
+      background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+      white-space: nowrap;
+    }
+
+    #idk button:hover {
+      box-shadow: 0 6px 18px rgba(124, 58, 237, 0.6);
+      transform: translateY(-2px);
+    }
+
+    #idk button:active {
+      transform: translateY(0);
+    }
+
+    #iframe {
+      width: 100%;
+      height: 700px;
+      border: 2px solid var(--accent-primary);
+      border-radius: 8px;
+      background: var(--bg-secondary);
+    }
+
+    /* Floating toolbar */
+    .floating-toolbar {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 1000;
+      animation: slideIn 0.4s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(150px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .toolbar-btn {
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+      border: none;
+      color: white;
+      font-size: 1.3em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+      transition: all 0.3s ease;
+      font-family: 'Lilita One', cursive;
+    }
+
+    .toolbar-btn:hover {
+      transform: scale(1.12);
+      box-shadow: 0 6px 20px rgba(124, 58, 237, 0.6);
+    }
+
+    .toolbar-btn:active {
+      transform: scale(1.05);
+    }
+
+    /* Modals */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal.active {
+      display: flex;
+      animation: fadeInModal 0.3s ease-out;
+    }
+
+    @keyframes fadeInModal {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .modal-content {
+      background: var(--bg-secondary);
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      border: 2px solid var(--accent-primary);
+      animation: popIn 0.3s ease-out;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    @keyframes popIn {
+      from {
+        transform: scale(0.85);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-close {
+      float: right;
+      font-size: 1.8em;
+      cursor: pointer;
+      color: var(--accent-primary);
+      transition: all 0.2s ease;
+      line-height: 1;
+    }
+
+    .modal-close:hover {
+      color: var(--accent-secondary);
+      transform: rotate(90deg);
+    }
+
+    .modal h2 {
+      color: var(--accent-primary);
+      margin-bottom: 20px;
+      clear: both;
+      font-size: 1.5em;
+    }
+
+    .modal-item {
+      padding: 12px;
+      margin: 12px 0;
+      background: var(--bg-primary);
+      border: 1px solid var(--accent-primary);
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--text-primary);
+      gap: 10px;
+      overflow: hidden;
+    }
+
+    .modal-item span {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 0.9em;
+    }
+
+    .modal-item button {
+      padding: 6px 12px;
+      background: var(--accent-primary);
+      border: none;
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+      font-family: 'Lilita One', cursive;
+      font-size: 0.75em;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .modal-item button:hover {
+      background: var(--accent-secondary);
+      transform: translateY(-1px);
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 55px;
+      height: 28px;
+      margin: 15px 0;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 28px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .toggle-slider {
+      background-color: var(--accent-primary);
+    }
+
+    input:checked + .toggle-slider:before {
+      transform: translateX(27px);
+    }
+
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 15px 0;
+      color: var(--text-primary);
+    }
+
+    .clear-btn {
+      width: auto;
+      padding: 12px 24px;
+      margin-top: 20px;
+      font-size: 1em;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2em;
+      }
+
+      .container {
+        padding: 20px 15px;
+      }
+
+      header {
+        padding: 25px 15px;
+        margin-bottom: 20px;
+      }
+
+      #idk {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      #url, #proxysel, #searchEngine, #idk button {
+        width: 100%;
+        min-width: unset;
+      }
+
+      #iframe {
+        height: 500px;
+      }
+
+      .floating-toolbar {
+        bottom: 20px;
+        right: 20px;
+        gap: 10px;
+      }
+
+      .toolbar-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 1.1em;
+      }
+
+      .tabs-container {
+        margin-bottom: 15px;
+      }
+
+      .tab-btn {
+        padding: 8px 14px;
+        font-size: 0.85em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="particles"></canvas>
+
+  <div class="container">
+    <header>
+      <h1>PROXY KING</h1>
+      <p>SECURE • FAST • ANONYMOUS</p>
+    </header>
+
+    <!-- Tabs system -->
+    <div class="tabs-container" id="tabsContainer"></div>
+
+    <form id="idk">
+      <input
+        id="url"
+        type="text"
+        class="search-input search"
+        placeholder="Enter URL or search..."
+        autocomplete="off"
+      />
+      <select id="proxysel">
+        <option value="uv">ULTRAVIOLET</option>
+        <option value="scramjet">SCRAMJET</option>
+      </select>
+      <button type="submit">GO</button>
+    </form>
+
+    <iframe id="iframe"></iframe>
+  </div>
+
+  <!-- Floating toolbar -->
+  <div class="floating-toolbar" id="toolbar">
+    <button class="toolbar-btn" title="New Tab" id="newTabBtn">+</button>
+    <button class="toolbar-btn" title="Fullscreen" id="fullscreenBtn">⛶</button>
+    <button class="toolbar-btn" title="Settings" id="settingsBtn">⚙️</button>
+    <button class="toolbar-btn" title="Cache" id="cacheBtn">🗑️</button>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal" id="settingsModal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeModal('settingsModal')">&times;</span>
+      <h2>Settings</h2>
+      <div class="settings-row">
+        <label style="color: var(--text-primary);">Dark Mode</label>
+        <label class="toggle-switch">
+          <input type="checkbox" id="themeToggle" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <button class="toolbar-btn clear-btn" onclick="clearAllCache()">Clear Cache</button>
+    </div>
+  </div>
+
+  <!-- Cache Manager Modal -->
+  <div class="modal" id="cacheModal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeModal('cacheModal')">&times;</span>
+      <h2>Cache Manager</h2>
+      <div id="cacheList"></div>
+      <button class="toolbar-btn clear-btn" onclick="clearAllCache()">Clear All</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/particles.js@2.0.0/particles.min.js"></script>
   <script src="/baremux/index.js" defer></script>
   <script src="/uv/uv.bundle.js" defer></script>
   <script src="/uv/uv.config.js" defer></script>
   <script src="/scram/scramjet.all.js" defer></script>
   <script src="/stuff.js" defer></script>
+
+  <script>
+    // Initialize particles
+    try {
+      particlesJS("particles", {
+        particles: {
+          number: { value: 60, density: { enable: true, value_area: 1000 } },
+          color: { value: ["#7c3aed", "#a78bfa"] },
+          shape: { type: "circle" },
+          opacity: { value: 0.4, random: true, anim: { enable: true, speed: 0.8, opacity_min: 0.1, sync: false } },
+          size: { value: 2.5, random: true, anim: { enable: true, speed: 1.5, size_min: 0.3, sync: false } },
+          line_linked: { enable: true, distance: 180, color: "#7c3aed", opacity: 0.3, width: 0.8 },
+          move: { enable: true, speed: 1.5, direction: "none", random: false, straight: false, out_mode: "out" }
+        },
+        interactivity: {
+          detect_on: "canvas",
+          events: {
+            onhover: { enable: true, mode: "grab" },
+            onclick: { enable: true, mode: "push" },
+            resize: true
+          },
+          modes: {
+            grab: { distance: 200, line_linked: { opacity: 0.7 } },
+            push: { particles_nb: 3 }
+          }
+        },
+        retina_detect: true
+      });
+    } catch (e) {
+      console.error("Particles failed:", e);
+    }
+
+    // Tab system
+    let tabs = [];
+    let currentTab = 0;
+
+    function createTab() {
+      const tab = {
+        id: Date.now(),
+        name: `Tab ${tabs.length + 1}`,
+        url: "",
+        inputUrl: ""
+      };
+      tabs.push(tab);
+      renderTabs();
+      switchTab(tabs.length - 1);
+    }
+
+    function renderTabs() {
+      const container = document.getElementById('tabsContainer');
+      container.innerHTML = '';
+      tabs.forEach((tab, idx) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'tab-wrapper';
+        
+        const btn = document.createElement('button');
+        btn.className = `tab-btn ${idx === currentTab ? 'active' : ''}`;
+        btn.textContent = tab.name.length > 15 ? tab.name.substring(0, 12) + '...' : tab.name;
+        btn.title = tab.name;
+        btn.onclick = () => switchTab(idx);
+        
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'tab-close-btn';
+        closeBtn.textContent = '✕';
+        closeBtn.onclick = (e) => {
+          e.stopPropagation();
+          closeTab(idx);
+        };
+        
+        wrapper.appendChild(btn);
+        if (tabs.length > 1) wrapper.appendChild(closeBtn);
+        container.appendChild(wrapper);
+      });
+    }
+
+    function switchTab(idx) {
+      if (idx >= 0 && idx < tabs.length) {
+        currentTab = idx;
+        document.getElementById('iframe').src = tabs[currentTab].url || '';
+        document.getElementById('url').value = tabs[currentTab].inputUrl || '';
+        renderTabs();
+      }
+    }
+
+    function updateTabTitle(title) {
+      if (tabs[currentTab]) {
+        const displayName = title ? title.substring(0, 20) : `Tab ${currentTab + 1}`;
+        tabs[currentTab].name = displayName;
+        renderTabs();
+      }
+    }
+
+    function closeTab(idx) {
+      tabs.splice(idx, 1);
+      if (currentTab >= tabs.length) currentTab = Math.max(0, tabs.length - 1);
+      if (tabs.length === 0) createTab();
+      else switchTab(currentTab);
+      renderTabs();
+    }
+
+    // Theme toggle
+    function initTheme() {
+      const themeToggle = document.getElementById('themeToggle');
+      const savedTheme = localStorage.getItem('theme');
+      
+      if (savedTheme === 'light') {
+        document.documentElement.classList.add('light-mode');
+        themeToggle.checked = false;
+      } else {
+        document.documentElement.classList.remove('light-mode');
+        themeToggle.checked = true;
+      }
+
+      themeToggle.addEventListener('change', (e) => {
+        if (!e.target.checked) {
+          document.documentElement.classList.add('light-mode');
+          localStorage.setItem('theme', 'light');
+        } else {
+          document.documentElement.classList.remove('light-mode');
+          localStorage.setItem('theme', 'dark');
+        }
+      });
+    }
+
+    // Search engine picker
+    function initSearchEngine() {
+      const savedEngine = localStorage.getItem('searchEngine') || 'google';
+      document.getElementById('searchEngine').value = savedEngine;
+
+      document.getElementById('searchEngine').addEventListener('change', (e) => {
+        localStorage.setItem('searchEngine', e.target.value);
+      });
+    }
+
+    // Cache manager
+    function saveToCacheList(url) {
+      if (!url || url.trim() === '') return;
+      let cache = JSON.parse(localStorage.getItem('proxyCache') || '[]');
+      const cleanUrl = url.substring(0, 80);
+      if (!cache.includes(cleanUrl)) {
+        cache.unshift(cleanUrl);
+        cache = cache.slice(0, 50);
+        localStorage.setItem('proxyCache', JSON.stringify(cache));
+      }
+    }
+
+    function displayCacheList() {
+      let cache = JSON.parse(localStorage.getItem('proxyCache') || '[]');
+      const list = document.getElementById('cacheList');
+      list.innerHTML = '';
+      if (cache.length === 0) {
+        list.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">No cached items</p>';
+        return;
+      }
+      cache.forEach((url, idx) => {
+        const item = document.createElement('div');
+        item.className = 'modal-item';
+        item.innerHTML = `<span>${url}</span><button onclick="deleteFromCache(${idx})">Delete</button>`;
+        list.appendChild(item);
+      });
+    }
+
+    function deleteFromCache(idx) {
+      let cache = JSON.parse(localStorage.getItem('proxyCache') || '[]');
+      cache.splice(idx, 1);
+      localStorage.setItem('proxyCache', JSON.stringify(cache));
+      displayCacheList();
+    }
+
+    function clearAllCache() {
+      localStorage.setItem('proxyCache', '[]');
+      displayCacheList();
+      alert('Cache cleared!');
+    }
+
+    // Modal functions
+    function openModal(id) {
+      document.getElementById(id).classList.add('active');
+      if (id === 'cacheModal') displayCacheList();
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    // Close modal on outside click
+    document.querySelectorAll('.modal').forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          closeModal(modal.id);
+        }
+      });
+    });
+
+    // Toolbar buttons
+    document.getElementById('newTabBtn').addEventListener('click', createTab);
+    
+    document.getElementById('fullscreenBtn').addEventListener('click', () => {
+      const iframe = document.getElementById('iframe');
+      if (iframe.requestFullscreen) iframe.requestFullscreen();
+      else if (iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
+      else if (iframe.mozRequestFullScreen) iframe.mozRequestFullScreen();
+      else if (iframe.msRequestFullscreen) iframe.msRequestFullscreen();
+    });
+
+    document.getElementById('settingsBtn').addEventListener('click', () => openModal('settingsModal'));
+    document.getElementById('cacheBtn').addEventListener('click', () => openModal('cacheModal'));
+
+    // Form submission - preserve core proxy functionality
+    document.getElementById('idk').addEventListener('submit', (e) => {
+      try {
+        const userInput = document.getElementById('url').value;
+        if (userInput && tabs[currentTab]) {
+          tabs[currentTab].inputUrl = userInput;
+          saveToCacheList(userInput);
+          updateTabTitle(userInput);
+        }
+      } catch (err) {
+        console.error("Feature error:", err);
+      }
+    });
+
+    // Intercept iframe navigation and link clicks for tab integration
+    document.getElementById('iframe').addEventListener('load', () => {
+      try {
+        const iframe = document.getElementById('iframe');
+        const iframeDoc = iframe.contentDocument;
+        
+        if (!iframeDoc) return;
+        
+        // Get page title
+        const title = iframeDoc.title;
+        if (title && title.length > 0) updateTabTitle(title);
+        
+        // Intercept link clicks to open in new tabs instead of new windows
+        const links = iframeDoc.querySelectorAll('a[target="_blank"]');
+        links.forEach(link => {
+          link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const href = link.getAttribute('href');
+            if (href) {
+              // Create new tab and navigate to link
+              createTab();
+              const userInput = href.startsWith('http') ? href : 
+                               href.startsWith('/') ? new URL(href, iframe.src).href :
+                               new URL(href, iframe.src).href;
+              
+              document.getElementById('url').value = userInput;
+              const form = document.getElementById('idk');
+              form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+            }
+          }, false);
+        });
+        
+        // Also handle links that don't have target="_blank" but might be javascript:
+        iframeDoc.addEventListener('click', (e) => {
+          if (e.target.tagName === 'A') {
+            const href = e.target.getAttribute('href');
+            const target = e.target.getAttribute('target');
+            
+            // Handle target="_blank" or window.open calls
+            if (target === '_blank' || target === '_new') {
+              e.preventDefault();
+              if (href && !href.startsWith('javascript:')) {
+                createTab();
+                const userInput = href.startsWith('http') ? href : 
+                                 href.startsWith('/') ? new URL(href, iframe.src).href :
+                                 new URL(href, iframe.src).href;
+                
+                document.getElementById('url').value = userInput;
+                const form = document.getElementById('idk');
+                form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+              }
+            }
+          }
+        }, true);
+        
+      } catch (e) {
+        // CORS restriction - silently fail but don't break functionality
+        console.log("Iframe integration unavailable (CORS):", e.message);
+      }
+    });
+
+    // Initialize
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        initTheme();
+        initSearchEngine();
+        if (tabs.length === 0) createTab();
+      });
+    } else {
+      initTheme();
+      initSearchEngine();
+      if (tabs.length === 0) createTab();
+    }
+  </script>
 </body>
+</html>
+

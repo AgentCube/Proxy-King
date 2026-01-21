@@ -42,7 +42,23 @@ async function setTransport(transportsel) {
   }
 }
 function search(input) {
-  let template = "https://www.google.com/search?q=%s";
+  // Get selected search engine from dropdown
+  const searchEngine = document.getElementById("searchEngine")?.value || "google";
+  
+  let template;
+  switch(searchEngine) {
+    case "duckduckgo":
+      template = "https://www.duckduckgo.com/?q=%s";
+      break;
+    case "bing":
+      template = "https://www.bing.com/search?q=%s";
+      break;
+    case "google":
+    default:
+      template = "https://www.google.com/search?q=%s";
+      break;
+  }
+  
   try {
     return new URL(input).toString();
   } catch (err) {}
@@ -65,4 +81,9 @@ document.getElementById("idk").addEventListener("submit", async (event) => {
     url = __uv$config.prefix + __uv$config.encodeUrl(fixedurl);
   } else url = scramjet.encodeUrl(fixedurl);
   document.getElementById("iframe").src = url;
+  
+  // Update current tab's URL in the tab system
+  if (typeof tabs !== 'undefined' && tabs[currentTab]) {
+    tabs[currentTab].url = url;
+  }
 });
