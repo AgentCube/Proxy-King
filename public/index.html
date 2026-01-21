@@ -578,7 +578,7 @@
         placeholder="Enter URL or search..."
         autocomplete="off"
       />
-      <select id="proxysel">
+      <select id="proxysel" style="display: inline-block !important; min-width: 140px !important;">
         <option value="uv">ULTRAVIOLET</option>
         <option value="scramjet">SCRAMJET</option>
       </select>
@@ -904,10 +904,12 @@
     // Initialize
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => {
+        console.log('Page loaded - proxysel element:', document.getElementById('proxysel'));
         initTheme();
         if (tabs.length === 0) createTab();
       });
     } else {
+      console.log('Page loaded - proxysel element:', document.getElementById('proxysel'));
       initTheme();
       if (tabs.length === 0) createTab();
     }
