@@ -635,35 +635,60 @@
   <script src="/stuff.js" defer></script>
 
   <script>
-    // Initialize particles
-    try {
-      particlesJS("particles", {
-        particles: {
-          number: { value: 60, density: { enable: true, value_area: 1000 } },
-          color: { value: ["#7c3aed", "#a78bfa"] },
-          shape: { type: "circle" },
-          opacity: { value: 0.4, random: true, anim: { enable: true, speed: 0.8, opacity_min: 0.1, sync: false } },
-          size: { value: 2.5, random: true, anim: { enable: true, speed: 1.5, size_min: 0.3, sync: false } },
-          line_linked: { enable: true, distance: 180, color: "#7c3aed", opacity: 0.3, width: 0.8 },
-          move: { enable: true, speed: 1.5, direction: "none", random: false, straight: false, out_mode: "out" }
+    // Advanced Particles config with dark and light mode
+    const darkParticlesConfig = {
+      "particles": {
+        "number": { "value": 120, "density": { "enable": true, "value_area": 900 } },
+        "color": { "value": ["#7c3aed", "#a78bfa", "#c084fc", "#e879f9", "#ff00ff"] },
+        "shape": { "type": ["circle", "star", "polygon"], "stroke": { "width": 0, "color": "#fff" }, "polygon": { "nb_sides": 5 } },
+        "opacity": { "value": 0.4, "random": true, "anim": { "enable": true, "speed": 0.8, "opacity_min": 0.1, "sync": false } },
+        "size": { "value": 3.5, "random": true, "anim": { "enable": true, "speed": 2, "size_min": 0.5, "sync": false } },
+        "line_linked": { "enable": true, "distance": 150, "color": "#7c3aed", "opacity": 0.3, "width": 1.2 },
+        "move": { "enable": true, "speed": 2, "direction": "none", "random": false, "straight": false, "out_mode": "bounce" }
+      },
+      "interactivity": {
+        "detect_on": "canvas",
+        "events": {
+          "onhover": { "enable": true, "mode": ["grab", "repulse"] },
+          "onclick": { "enable": true, "mode": "bubble" },
+          "resize": true
         },
-        interactivity: {
-          detect_on: "canvas",
-          events: {
-            onhover: { enable: true, mode: "grab" },
-            onclick: { enable: true, mode: "push" },
-            resize: true
-          },
-          modes: {
-            grab: { distance: 200, line_linked: { opacity: 0.7 } },
-            push: { particles_nb: 3 }
-          }
-        },
-        retina_detect: true
-      });
-    } catch (e) {
-      console.error("Particles failed:", e);
+        "modes": {
+          "grab": { "distance": 200, "line_linked": { "opacity": 0.5 } },
+          "repulse": { "distance": 120, "duration": 0.4 },
+          "bubble": { "distance": 250, "size": 8, "duration": 2, "opacity": 0.6 }
+        }
+      },
+      "retina_detect": true
+    };
+
+    const lightParticlesConfig = JSON.parse(JSON.stringify(darkParticlesConfig));
+    lightParticlesConfig.particles.color.value = ["#7c3aed", "#a78bfa", "#c084fc", "#e879f9"];
+    lightParticlesConfig.particles.line_linked.color = "#7c3aed";
+
+    function loadParticles(config) {
+      if (typeof particlesJS !== 'undefined') {
+        try {
+          particlesJS("particles", config);
+        } catch (e) {
+          console.error("Particles loading error:", e);
+        }
+      }
     }
+
+    // Initialize particles when page loads
+    window.addEventListener('load', function() {
+      setTimeout(() => {
+        loadParticles(darkParticlesConfig);
+      }, 500);
+    });
+    
+    // Fallback initialization
+    setTimeout(() => {
+      if (typeof particlesJS !== 'undefined') {
+        loadParticles(darkParticlesConfig);
+      }
+    }, 800);
 
     // Tab system
     let tabs = [];
@@ -741,18 +766,22 @@
       if (savedTheme === 'light') {
         document.documentElement.classList.add('light-mode');
         themeToggle.checked = false;
+        loadParticles(lightParticlesConfig);
       } else {
         document.documentElement.classList.remove('light-mode');
         themeToggle.checked = true;
+        loadParticles(darkParticlesConfig);
       }
 
       themeToggle.addEventListener('change', (e) => {
         if (!e.target.checked) {
           document.documentElement.classList.add('light-mode');
           localStorage.setItem('theme', 'light');
+          loadParticles(lightParticlesConfig);
         } else {
           document.documentElement.classList.remove('light-mode');
           localStorage.setItem('theme', 'dark');
+          loadParticles(darkParticlesConfig);
         }
       });
     }
