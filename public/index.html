@@ -578,9 +578,14 @@
         placeholder="Enter URL or search..."
         autocomplete="off"
       />
-      <select id="proxysel" style="display: inline-block !important; min-width: 140px !important;">
+      <select id="proxysel">
         <option value="uv">ULTRAVIOLET</option>
         <option value="scramjet">SCRAMJET</option>
+      </select>
+      <select id="searchEngine">
+        <option value="google">GOOGLE</option>
+        <option value="bing">BING</option>
+        <option value="duckduckgo">DUCKDUCKGO</option>
       </select>
       <button type="submit">GO</button>
     </form>
@@ -752,6 +757,30 @@
       });
     }
 
+    // Search engine selector
+    function initSearchEngine() {
+      const savedEngine = localStorage.getItem('searchEngine') || 'google';
+      const selectElement = document.getElementById('searchEngine');
+      if (selectElement) {
+        selectElement.value = savedEngine;
+        selectElement.addEventListener('change', (e) => {
+          localStorage.setItem('searchEngine', e.target.value);
+        });
+      }
+    }
+
+    // Search engine picker
+    function initSearchEngine() {
+      const savedEngine = localStorage.getItem('searchEngine') || 'google';
+      const engineSelect = document.getElementById('searchEngine');
+      if (engineSelect) {
+        engineSelect.value = savedEngine;
+        engineSelect.addEventListener('change', (e) => {
+          localStorage.setItem('searchEngine', e.target.value);
+        });
+      }
+    }
+
     // Cache manager
     function saveToCacheList(url) {
       if (!url || url.trim() === '') return;
@@ -904,13 +933,15 @@
     // Initialize
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => {
-        console.log('Page loaded - proxysel element:', document.getElementById('proxysel'));
+        console.log('Page loaded - searchEngine element:', document.getElementById('searchEngine'));
         initTheme();
+        initSearchEngine();
         if (tabs.length === 0) createTab();
       });
     } else {
-      console.log('Page loaded - proxysel element:', document.getElementById('proxysel'));
+      console.log('Page loaded - searchEngine element:', document.getElementById('searchEngine'));
       initTheme();
+      initSearchEngine();
       if (tabs.length === 0) createTab();
     }
   </script>
