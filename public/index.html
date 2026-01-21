@@ -752,16 +752,6 @@
       });
     }
 
-    // Search engine picker
-    function initSearchEngine() {
-      const savedEngine = localStorage.getItem('searchEngine') || 'google';
-      document.getElementById('searchEngine').value = savedEngine;
-
-      document.getElementById('searchEngine').addEventListener('change', (e) => {
-        localStorage.setItem('searchEngine', e.target.value);
-      });
-    }
-
     // Cache manager
     function saveToCacheList(url) {
       if (!url || url.trim() === '') return;
@@ -915,12 +905,10 @@
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => {
         initTheme();
-        initSearchEngine();
         if (tabs.length === 0) createTab();
       });
     } else {
       initTheme();
-      initSearchEngine();
       if (tabs.length === 0) createTab();
     }
   </script>
